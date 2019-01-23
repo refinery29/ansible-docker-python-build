@@ -1,0 +1,15 @@
+---
+
+- block:
+  name: Handle the Docker stuff on the Ansible host
+    - name: Clone docker-python-build repo
+
+    - name: Build docker image
+
+    - name: Run docker container to build artifact
+
+  delegate_to: localhost
+
+- name: Send artifact to target
+
+- name: Unpack the artifact
