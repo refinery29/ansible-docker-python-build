@@ -1,5 +1,12 @@
 ---
 
+- name: Check for existing artifact
+  stat:
+    path: &artifact /tmp/python-{{ docker_python_build_python_version }}-ubuntu-trusty.tgz
+  register: artifact
+  delegate_to: localhost
+  become: no
+
 - name: Handle the Docker stuff on the Ansible host
   block:
 
@@ -11,30 +18,37 @@
       git:
         repo: git@github.com:schlueter/docker-python-build.git
         dest: "{{ build_dir.path }}"
+        version: "{{ docker_python_build_git_version }}"
 
     - name: Build docker image
       docker_image:
         name: python-build
         path: "{{ build_dir.path }}"
+        force: yes
 
     - name: Run docker container to build artifact
       docker_container:
-        name: python-build-{{ docker_python_build_version }}
+        name: python-build-{{ docker_python_build_python_version }}
         env:
-          python_version: "{{ docker_python_build_version }}"
+          python_version: "{{ docker_python_build_python_version }}"
         keep_volumes: no
         volumes: /tmp/:/build
         image: python-build
 
     - name: Wait for the build artifact to be created
       wait_for:
-        path: &artifact /tmp/python-{{ docker_python_build_version }}-ubuntu-trusty.tgz
+        path: *artifact
         timeout: 1800
 
   delegate_to: localhost
+  when: not artifact.stat.exists
   become: no
 
 - name: Send artifact to target
   unarchive:
     dest: /
     src: *artifact
+  delay: 10
+  retries: 3
+  register: send_artifact
+  until: send_artifact is success
