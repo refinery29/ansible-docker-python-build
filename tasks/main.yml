@@ -41,7 +41,7 @@
         timeout: 1800
 
   delegate_to: localhost
-  when: not artifact.stat.exists
+  when: force_rebuild or not artifact.stat.exists
   become: no
 
 - name: Send artifact to target

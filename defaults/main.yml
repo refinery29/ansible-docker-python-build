@@ -1,3 +1,4 @@
 ---
 docker_python_build_python_version: 3.6.8
 docker_python_build_git_version: master
+force_rebuild: no
