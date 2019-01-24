@@ -1,15 +1,40 @@
 ---
 
-- block:
-  name: Handle the Docker stuff on the Ansible host
+- name: Handle the Docker stuff on the Ansible host
+  block:
+
+    - name: Create temporary build directory
+      tempfile: state=directory suffix=docker-python-build
+      register: build_dir
+
     - name: Clone docker-python-build repo
+      git:
+        repo: git@github.com:schlueter/docker-python-build.git
+        dest: "{{ build_dir.path }}"
 
     - name: Build docker image
+      docker_image:
+        name: python-build
+        path: "{{ build_dir.path }}"
 
     - name: Run docker container to build artifact
+      docker_container:
+        name: python-build-{{ docker_python_build_version }}
+        env:
+          python_version: "{{ docker_python_build_version }}"
+        keep_volumes: no
+        volumes: /tmp/:/build
+        image: python-build
+
+    - name: Wait for the build artifact to be created
+      wait_for:
+        path: &artifact /tmp/python-{{ docker_python_build_version }}-ubuntu-trusty.tgz
+        timeout: 1800
 
   delegate_to: localhost
+  become: no
 
 - name: Send artifact to target
-
-- name: Unpack the artifact
+  unarchive:
+    dest: /
+    src: *artifact
