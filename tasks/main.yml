@@ -20,12 +20,14 @@
 
     - name: Build docker image
       docker_image:
+        api_version: "{{ python_build_docker_api_version }}"
         name: python-build
         path: "{{ build_dir.path }}"
         force: yes
 
     - name: Run docker container to build artifact
       docker_container:
+        api_version: "{{ python_build_docker_api_version }}"
         name: python-build-{{ python_build_python_version }}
         env:
           python_version: "{{ python_build_python_version }}"
