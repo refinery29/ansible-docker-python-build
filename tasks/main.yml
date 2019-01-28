@@ -2,7 +2,7 @@
 
 - name: Check for existing artifact
   stat:
-    path: &artifact /tmp/python-{{ docker_python_build_python_version }}-ubuntu-trusty.tgz
+    path: &artifact /tmp/python-{{ python_build_python_version }}-ubuntu-trusty.tgz
   register: artifact
   delegate_to: localhost
   become: no
@@ -18,7 +18,7 @@
       git:
         repo: git@github.com:schlueter/docker-python-build.git
         dest: "{{ build_dir.path }}"
-        version: "{{ docker_python_build_git_version }}"
+        version: "{{ python_build_dockerfile_git_version }}"
 
     - name: Build docker image
       docker_image:
@@ -28,9 +28,9 @@
 
     - name: Run docker container to build artifact
       docker_container:
-        name: python-build-{{ docker_python_build_python_version }}
+        name: python-build-{{ python_build_python_version }}
         env:
-          python_version: "{{ docker_python_build_python_version }}"
+          python_version: "{{ python_build_python_version }}"
         keep_volumes: no
         volumes: /tmp/:/build
         image: python-build
