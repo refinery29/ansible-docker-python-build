@@ -14,7 +14,7 @@
 
     - name: Clone docker-python-build repo
       git:
-        repo: git@github.com:schlueter/docker-python-build.git
+        repo: https://github.com/schlueter/docker-python-build
         dest: "{{ build_dir.path }}"
         version: "{{ python_build_dockerfile_git_version }}"
 
