@@ -40,6 +40,7 @@
 
   delegate_to: localhost
   when: force_rebuild or not artifact.stat.exists
+  become: yes
 
 - name: Send artifact to target
   unarchive:
