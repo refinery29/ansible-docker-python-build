@@ -8,7 +8,6 @@
   become: no
 
 - block:
-
     - name: Create temporary build directory
       tempfile: state=directory suffix=docker-python-build
       register: build_dir
