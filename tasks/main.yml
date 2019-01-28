@@ -41,6 +41,7 @@
         timeout: 1800
 
   delegate_to: localhost
+  run_once: yes
   when: force_rebuild or not artifact.stat.exists
   become: yes
 
